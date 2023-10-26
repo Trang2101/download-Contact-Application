@@ -4,8 +4,7 @@ import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.MainScope
+import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlin.random.Random
@@ -22,8 +21,6 @@ class ContactViewModel(application: Application) : AndroidViewModel(application)
     private var _progressNum = MutableLiveData(0)
     val progressNum: LiveData<Int> = _progressNum
 
-    private val coroutineScope: CoroutineScope = MainScope()
-
     init {
         val context = application.applicationContext
         databaseHandle = DatabaseHandle(context)
@@ -33,13 +30,13 @@ class ContactViewModel(application: Application) : AndroidViewModel(application)
     private fun addContacts() {
         for (i in 0..10) {
             val randomInt = Random.nextInt(975485204, 975842548)
-            databaseHandle.addContact("person ${i+1}","0$randomInt")
+            databaseHandle.addContact("person ${i + 1}", "0$randomInt")
         }
     }
 
-    fun downloadContacts(){
+    fun downloadContacts() {
         _isVisible.value = true
-        coroutineScope.launch {
+        viewModelScope.launch {
             for (i in 0 until 20) {
                 delay(200)
                 _progressNum.value = _progressNum.value?.plus(10)
